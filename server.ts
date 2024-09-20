@@ -187,3 +187,23 @@ app.put("/products/:id", async (req, res) => {
         });
     }
 });
+
+
+app.delete("/products/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await Product.findByIdAndDelete(id);
+        res.json({
+            success: true,
+            message: "Product deleted successfully!",
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while deleting product.",
+            data: {},
+        });
+    }
+});
+
