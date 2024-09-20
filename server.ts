@@ -35,6 +35,8 @@ main();
 
 
 // Schemas
+
+//product schema
 const ProductSchema = new Schema({
     name: {
         type: String,
@@ -71,9 +73,37 @@ const ProductSchema = new Schema({
 });
 
 
+//order schema
+const OrderSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+    },
+    phone: {
+        type: String,
+        required: true,
+    },
+    address: {
+        type: String,
+        required: true,
+    },
+    paymentMethod: {
+        type: String,
+        required: true,
+    },
+});
+
 // Models
+
+//product model
 const Product = model("Product", ProductSchema);
 
+
+//order model
 
 
 //create product
@@ -189,6 +219,7 @@ app.put("/products/:id", async (req, res) => {
 });
 
 
+//delete product
 app.delete("/products/:id", async (req, res) => {
     try {
         const id = req.params.id;
