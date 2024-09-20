@@ -104,6 +104,7 @@ const Product = model("Product", ProductSchema);
 
 
 //order model
+const Order = model("Order", OrderSchema);
 
 
 //create product
