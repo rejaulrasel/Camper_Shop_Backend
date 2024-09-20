@@ -239,3 +239,21 @@ app.delete("/products/:id", async (req, res) => {
     }
 });
 
+
+app.post("/orders", async (req, res) => {
+    try {
+        const paymentData = req.body;
+        const result = await Order.create(paymentData);
+        res.json({
+            success: true,
+            message: "Order successful!",
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while ordering product",
+            data: {},
+        });
+    }
+});
