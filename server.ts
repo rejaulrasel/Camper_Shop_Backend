@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import mongoose, { model, Schema } from "mongoose";
 const app = express();
 import cors from "cors";
@@ -256,4 +256,14 @@ app.post("/orders", async (req, res) => {
             data: {},
         });
     }
+});
+
+
+
+//not found route
+app.all("*", (req: Request, res: Response) => {
+    res.status(400).json({
+        success: false,
+        message: "Route not found",
+    });
 });
