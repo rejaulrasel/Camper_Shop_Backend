@@ -76,7 +76,7 @@ const Product = model("Product", ProductSchema);
 
 
 
-//product api
+//create product
 app.post("/products", async (req, res) => {
     try {
         const product = req.body;
@@ -96,4 +96,94 @@ app.post("/products", async (req, res) => {
     }
 });
 
+//get all product
+app.get("/products", async (req, res) => {
+    const { searchValue, category, minPrice, maxPrice, sort } = req.query;
+    const filter: any = {};
 
+    if (searchValue) {
+        filter.$or = [
+            { name: { $regex: searchValue, $options: "i" } },
+            { description: { $regex: searchValue, $options: "i" } },
+        ];
+    }
+
+    if (category) {
+        filter.category = category;
+    }
+
+    if (minPrice && maxPrice) {
+        filter.price = { $gte: minPrice, $lte: maxPrice };
+    } else if (minPrice) {
+        filter.price = { $gte: minPrice };
+    } else if (maxPrice) {
+        filter.price = { $lte: maxPrice };
+    }
+
+    let sortOption: any = {};
+
+    if (sort === "asc") {
+        sortOption.price = 1;
+    } else if (sort === "desc") {
+        sortOption.price = -1;
+    }
+
+    try {
+        const result = await Product.find(filter).sort(sortOption);
+        res.status(200).json({
+            success: true,
+            message: "Products retrieved successfully!",
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while finding product.",
+            data: [],
+        });
+    }
+});
+
+//get a single product
+app.get("/products/:id", async (req, res) => {
+    try {
+        const result = await Product.findById(req.params.id);
+        res.json({
+            success: true,
+            message: "Product is retrieved successfully!",
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while finding product.",
+            data: {},
+        });
+    }
+});
+
+
+//update a product
+app.put("/products/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const productData = req.body;
+
+        // Find the product by ID and update it
+        let result = await Product.findByIdAndUpdate(id, productData, {
+            new: true,
+        });
+
+        res.json({
+            success: true,
+            message: "Product updated successfully!",
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while updating the product.",
+            data: {},
+        });
+    }
+});
