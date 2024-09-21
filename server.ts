@@ -240,6 +240,8 @@ app.delete("/products/:id", async (req, res) => {
 });
 
 
+
+//create order
 app.post("/orders", async (req, res) => {
     try {
         const paymentData = req.body;
@@ -258,6 +260,56 @@ app.post("/orders", async (req, res) => {
     }
 });
 
+
+//update order
+app.put("/products", async (req, res) => {
+    try {
+        const updatedProductData = req.body;
+
+        // Update quantity for each product
+        const updatedResults = await Promise.all(
+            updatedProductData.map(async (product: any) => {
+                const existingProduct = await Product.findById(product._id);
+
+                if (!existingProduct) {
+                    // Handle invalid product ID
+                    return null;
+                }
+
+                existingProduct.quantity -= product.quantity;
+
+                if (existingProduct.quantity <= 0) {
+                    existingProduct.stock = false;
+                }
+
+                return await existingProduct.save();
+            })
+        );
+
+        res.json({
+            success: true,
+            message: "Products quantity updated successfully!",
+            data: updatedResults,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while updating product quantities.",
+            data: [],
+        });
+    }
+});
+
+
+
+//global error handler
+app.use((err: any, req: Request, res: Response, next: any) => {
+    res.status(500).json({
+        success: false,
+        message: err?.message || "Internal Server Error",
+        error: err,
+    });
+});
 
 
 //not found route
